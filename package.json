@@ -1,0 +1,28 @@
+{
+  "name": "sun-blog",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bin/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=dev nodemon ./bin/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sqq1992/sun-blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sqq1992/sun-blog/issues"
+  },
+  "homepage": "https://github.com/sqq1992/sun-blog#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "lodash": "^4.17.19"
+  }
+}
