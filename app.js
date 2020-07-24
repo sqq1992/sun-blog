@@ -40,27 +40,31 @@ const ServerHandle = (req, res) => {
 
 
     //todo test data
-    console.log('realData',{
-        url,
-        method,
-        path:req.path,
-        query:req.query,
-    })
+    // console.log('realData',{
+    //     url,
+    //     method,
+    //     path:req.path,
+    //     query:req.query,
+    // })
 
     //todo return data
     getPostData(req).then((postData)=>{
         console.log('postData', postData);
         req.body = postData;
 
-        let blogData = handleBlogRouter(req, res);
-        if(blogData){
-            res.end(JSON.stringify(blogData));
+        let blogDataResult = handleBlogRouter(req, res);
+        if(blogDataResult){
+            blogDataResult.then((dataJson)=>{
+                res.end(JSON.stringify(dataJson));
+            })
             return;
         }
 
-        let userData = handleUserRouter(req, res);
-        if(userData){
-            res.end(JSON.stringify(userData));
+        let userDataResult = handleUserRouter(req, res);
+        if(userDataResult){
+            userDataResult.then((dataJson)=>{
+                res.end(JSON.stringify(dataJson));
+            })
             return;
         }
 

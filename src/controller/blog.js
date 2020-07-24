@@ -1,52 +1,63 @@
 
 
-// api: api/blog/list
-function getBlogList(id) {
+const {execSql} = require("../db/mysql");
 
-    return [
-        {
-            id:1,
-            title:'sun1',
-            content: 'sun1',
-            author:'sun1'
-        },
-        {
-            id:2,
-            title:'sun2',
-            content: 'sun2',
-            author:'sun2'
-        },
-        {
-            id:3,
-            title:'sun3',
-            content: 'sun3',
-            author:'sun3'
-        },
-        {
-            id:4,
-            title:'sun4',
-            content: 'sun4',
-            author:'sun4'
-        },
-        {
-            id:5,
-            title:'sun5',
-            content: 'sun5',
-            author:'sun5'
-        }
-    ];
+// api: api/blog/list 获取全部博客列表
+function getBlogList(author, title) {
+    let sql = `select * from blogs where 1=1`;
 
-}
-
-function addBlog(obj){
-
-    return{
-        id: 6
+    if(author){
+        sql += ` and author='${author}' `;
     }
+
+    if(title){
+        sql += ` and title Like '%${title}%' `
+    }
+
+    sql += ` order by createtime desc`;
+
+    return execSql(sql);
 }
 
+// api: api/blog/getDetailById
+function getDetailById(id) {
+    let sql = `select * from blogs where id='${id}' `;
+
+    return execSql(sql);
+}
+
+// api: api/blog/addBlog
+function addBlog(body){
+    let {title, content, author} = body;
+    let nowTime = +new Date();
+
+    let sql = `insert into blogs (title,content,createtime,author) values ('${title}', '${content}', ${nowTime}, '${author}') `;
+
+    return execSql(sql);
+}
+
+// api: api/blog/updateBlog
+function updateBlog(body){
+    let {id, title, content, author} = body;
+
+    let sql = `update blogs set title='${title}', content='${content}' where id=${id}`;
+
+    return execSql(sql);
+}
+
+// api: api/blog/delBlog
+function delBlog(body){
+    let {id} = body;
+
+    let sql = `delete from blogs where id=${id}`;
+
+    return execSql(sql);
+}
 
 module.exports = {
     getBlogList,
-    addBlog
+    addBlog,
+    getDetailById,
+    updateBlog,
+    delBlog
 };

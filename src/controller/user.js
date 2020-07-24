@@ -1,12 +1,12 @@
 
-
+const {execSql} = require("../db/mysql");
 
 function postUserLogin(body){
-    let {userName, passWord} = body;
-    return{
-        userName,
-        passWord
-    }
+    let {userName, password} = body;
+
+    const sql = `select userName, realname from users where userName='${userName}' and password='${password}'`;
+
+    return execSql(sql);
 }
 
 
