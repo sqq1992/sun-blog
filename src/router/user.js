@@ -16,7 +16,7 @@ function handleUserRouter(req, res) {
 
     if(method==="GET"){
         switch (path) {
-            case "/api/user/postLogin": {
+            case "/api/user/postLogin": {       //todo test登录接口
                 let userName = get(query, 'userName', '');
                 let password = get(query, 'password', '');
 
@@ -37,7 +37,7 @@ function handleUserRouter(req, res) {
                     }
                 })
             }
-            case "/api/user/loginTest":{
+            case "/api/user/loginTest":{        //todo test接口
                 if(req.session.userName){
                     return Promise.resolve(
                         new SuccessModel({
@@ -55,10 +55,14 @@ function handleUserRouter(req, res) {
     }else if (method==="POST"){
         switch (path) {
             case "/api/user/postLogin": {
-                return postUserLogin(body).then((json) => {
+                let {userName, password} = body;
 
+                return postUserLogin(body).then((json) => {
                     let dataObj = json[0] || {};
                     if(dataObj.userName){
+                        req.session.userName = userName;
+                        req.session.password = password;
+                        setRedisVal(req.jessionId, req.session);
                         return new SuccessModel(dataObj);
                     }else {
                         return new ErrorModal(null,'登录失败');

@@ -5,6 +5,7 @@
   "main": "bin/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "test-html": "http-server -p 5006",
     "dev": "cross-env NODE_ENV=dev nodemon ./bin/main.js"
   },
   "repository": {
@@ -20,7 +21,8 @@
   "homepage": "https://github.com/sqq1992/sun-blog#readme",
   "devDependencies": {
     "cross-env": "^7.0.2",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "http-server": "^0.12.3"
   },
   "dependencies": {
     "lodash": "^4.17.19",

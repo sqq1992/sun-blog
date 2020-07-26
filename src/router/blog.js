@@ -1,3 +1,4 @@
+const {checkIsNotLogin} = require("../utils/authUtils");
 const {get} = require("lodash");
 const {SuccessModel, ErrorModal} = require("../model/resModel");
 const {getBlogList, addBlog, getDetailById, updateBlog, delBlog} = require('../controller/blog');
@@ -38,6 +39,11 @@ function handleBlogRouter(req, res) {
     }else if (method==="POST"){
         switch (path) {
             case "/api/blog/addBlog": {
+
+                if(checkIsNotLogin(req)){
+                    return checkIsNotLogin(req);
+                }
+
                 return addBlog(body).then((json) => {
                     if(json.insertId){
                         return new SuccessModel({
@@ -46,10 +52,14 @@ function handleBlogRouter(req, res) {
                     }else {
                         return new ErrorModal(null,'添加失败');
                     }
-
                 })
             }
             case "/api/blog/updateBlog": {
+
+                if(checkIsNotLogin(req)){
+                    return checkIsNotLogin(req);
+                }
+
                 return updateBlog(body).then((json) => {
                     if (json.affectedRows > 0) {
                         return new SuccessModel({
@@ -58,10 +68,14 @@ function handleBlogRouter(req, res) {
                     } else {
                         return new ErrorModal(null, '修改失败');
                     }
-
                 })
             }
             case "/api/blog/delBlog": {
+
+                if(checkIsNotLogin(req)){
+                    return checkIsNotLogin(req);
+                }
+
                 return delBlog(body).then((json) => {
                     console.log('delBlog', json);
                     if (json.affectedRows > 0) {
