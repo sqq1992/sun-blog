@@ -38,12 +38,12 @@
             password
         }
         post(url, data).then(res => {
-            if (res.errno === 0) {
+            if (res.success) {
                 // 登录成功
                 location.href = './admin.html'
             } else {
                 // 登录失败
-                alert(res.message)
+                alert(res.msg)
             }
         })
     })

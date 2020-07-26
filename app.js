@@ -2,6 +2,7 @@ const {get} = require('lodash');
 const querystring = require('querystring');
 const handleBlogRouter = require("./src/router/blog");
 const handleUserRouter = require("./src/router/user");
+const {writeAccessLog} = require("./src/utils/logs");
 const {getRedisVal} = require("./src/db/redis");
 const {getCookieExpires} = require("./src/utils/utils");
 const {getFormatCookie} = require("./src/utils/utils");
@@ -28,8 +29,6 @@ function getPostData(req) {
     });
 }
 
-const SESSION_DATA = {};
-
 const ServerHandle = (req, res) => {
 
     //set 返回格式
@@ -38,8 +37,6 @@ const ServerHandle = (req, res) => {
     // base data
     let method = req.method;
     let url = req.url;
-
-
 
     // second base data
     req.path = url.split('?')[0];
@@ -54,6 +51,9 @@ const ServerHandle = (req, res) => {
         JESSIONID = `${+new Date()}_${Math.random()}`;
     }
     req.jessionId = JESSIONID;
+
+    //todo 写日志
+    writeAccessLog(`${method} -- ${url} -- ${req.headers['user-agent']} -- ${Date.now()}`);
 
     getRedisVal(req.jessionId).then((sessionData)=>{       //获取redis里的session值
         req.session = sessionData || {};
