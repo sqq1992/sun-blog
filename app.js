@@ -1,103 +1,40 @@
-const {get} = require('lodash');
-const querystring = require('querystring');
-const handleBlogRouter = require("./src/router/blog");
-const handleUserRouter = require("./src/router/user");
-const {writeAccessLog} = require("./src/utils/logs");
-const {getRedisVal} = require("./src/db/redis");
-const {getCookieExpires} = require("./src/utils/utils");
-const {getFormatCookie} = require("./src/utils/utils");
+var app = require('koa')()
+  , logger = require('koa-logger')
+  , json = require('koa-json')
+  , views = require('koa-views')
+  , onerror = require('koa-onerror');
 
-function getPostData(req) {
-    return new Promise((resolve, reject) => {
-        let method = req.method;
+var index = require('./routes/index');
+var users = require('./routes/users');
 
-        if(method==="POST" && req.headers['content-type']==="application/json"){
-            let postData = '';
-            req.on('data',chunk => {
-                postData += chunk.toString();
-            })
-            req.on("end",()=>{
-                if(postData){
-                    resolve(JSON.parse(postData))
-                }else {
-                    resolve({})
-                }
-            })
-        }else {
-            resolve({});
-        }
-    });
-}
+// error handler
+onerror(app);
 
-const ServerHandle = (req, res) => {
+// global middlewares
+app.use(views('views', {
+  root: __dirname + '/views',
+  default: 'jade'
+}));
+app.use(require('koa-bodyparser')());
+app.use(json());
+app.use(logger());
 
-    //set 返回格式
-    res.setHeader('Content-type', 'application/json');
+app.use(function *(next){
+  var start = new Date;
+  yield next;
+  var ms = new Date - start;
+  console.log('%s %s - %s', this.method, this.url, ms);
+});
 
-    // base data
-    let method = req.method;
-    let url = req.url;
+app.use(require('koa-static')(__dirname + '/public'));
 
-    // second base data
-    req.path = url.split('?')[0];
-    req.query = querystring.parse(url.split('?')[1]);
-    req.cookie = getFormatCookie(req.headers.cookie);
+// routes definition
+app.use(index.routes(), index.allowedMethods());
+app.use(users.routes(), users.allowedMethods());
 
-    // set session
-    let JESSIONID = req.cookie.JESSIONID;
-    let isNeedSetCookie = false;
-    if(!JESSIONID){
-        isNeedSetCookie = true;
-        JESSIONID = `${+new Date()}_${Math.random()}`;
-    }
-    req.jessionId = JESSIONID;
+// error-handling
+app.on('error', (err, ctx) => {
+  console.error('server error', err, ctx)
+});
 
-    //todo 写日志
-    writeAccessLog(`${method} -- ${url} -- ${req.headers['user-agent']} -- ${Date.now()}`);
-
-    getRedisVal(req.jessionId).then((sessionData)=>{       //获取redis里的session值
-        req.session = sessionData || {};
-        // console.log('req.session', req.session);
-
-        return getPostData(req);                    //获取请求的接口里的参数数据
-    }).then((postData)=>{
-        // console.log('postData', postData);
-        req.body = postData;
-
-        let blogDataResult = handleBlogRouter(req, res);
-        if(blogDataResult){
-            blogDataResult.then((dataJson)=>{
-
-                if(isNeedSetCookie){
-                    res.setHeader('Set-Cookie',`JESSIONID=${req.jessionId}; path=/; httpOnly; expires=${getCookieExpires()}`)
-                }
-
-                res.end(JSON.stringify(dataJson));
-            })
-            return;
-        }
-
-        let userDataResult = handleUserRouter(req, res);
-        if(userDataResult){
-            userDataResult.then((dataJson)=>{
-
-                if(isNeedSetCookie){
-                    res.setHeader('Set-Cookie',`JESSIONID=${req.jessionId}; path=/; httpOnly; expires=${getCookieExpires()}`)
-                }
-
-                res.end(JSON.stringify(dataJson));
-            })
-            return;
-        }
-
-
-        res.writeHead(404, {"Content-type": "text/plain"});
-        res.write("404 NOT Found\n");
-        res.end();
-    })
-
-
-};
-
-
-module.exports = ServerHandle;
+module.exports = app;

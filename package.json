@@ -1,32 +1,27 @@
 {
   "name": "sun-blog",
-  "version": "1.0.0",
-  "description": "",
-  "main": "bin/main.js",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "test-html": "http-server -p 5006",
-    "dev": "cross-env NODE_ENV=dev nodemon ./bin/main.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sqq1992/sun-blog.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/sqq1992/sun-blog/issues"
-  },
-  "homepage": "https://github.com/sqq1992/sun-blog#readme",
-  "devDependencies": {
-    "cross-env": "^7.0.2",
-    "nodemon": "^2.0.4",
-    "http-server": "^0.12.3"
+    "start": "node bin/www",
+    "dev": "./node_modules/.bin/nodemon bin/www",
+    "prd": "pm2 start bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "lodash": "^4.17.19",
-    "mysql": "^2.18.1",
-    "redis": "^3.0.2"
+    "co": "^4.6.0",
+    "debug": "^2.6.3",
+    "jade": "~1.11.0",
+    "koa": "^1.4.0",
+    "koa-bodyparser": "^2.5.0",
+    "koa-json": "^1.1.3",
+    "koa-logger": "^1.3.1",
+    "koa-onerror": "^1.3.1",
+    "koa-router": "^5.4.0",
+    "koa-static": "^1.5.2",
+    "koa-views": "^3.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.8.1"
   }
 }
