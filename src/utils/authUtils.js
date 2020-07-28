@@ -1,12 +1,11 @@
 const {ErrorModal} = require("../model/resModel");
 
-function checkIsNotLogin(req){
-    if(!req.session.userName){
-        return Promise.resolve(
-            new ErrorModal(null, '尚未登录')
-        );
+async function checkIsNotLogin(ctx,next){
+    if(ctx.session.userName){
+        await next();
+        return;
     }
-    return null;
+    ctx.body = new ErrorModal(null, '尚未登录');
 }
 
 
