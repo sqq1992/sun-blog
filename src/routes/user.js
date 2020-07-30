@@ -46,8 +46,8 @@ router.post('/postLogin', async (ctx, next) => {
   let dataObj = json[0] || {};
 
   if(dataObj.userName){
-    ctx.session.userName = userName;
-    ctx.session.password = password;
+    ctx.session.userName = dataObj.userName;
+    ctx.session.password = dataObj.password;
     ctx.body = new SuccessModel({
       data: ctx.session
     });

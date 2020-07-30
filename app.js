@@ -54,7 +54,6 @@ app.use(session({
 }))
 
 
-
 // routes
 app.use(index.routes(), index.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
