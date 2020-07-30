@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "test-html": "http-server -p 5006",
     "dev": "cross-env NODE_ENV=dev nodemon ./bin/www",
     "prd": "cross-env NODE_ENV=production pm2 start bin/www",
+    "test-html": "http-server -p 5006",
+    "test-pm2": "cross-env NODE_ENV=dev pm2 start pm2.conf.json bin/www",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
