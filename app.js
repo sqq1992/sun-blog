@@ -4,9 +4,12 @@ const views = require('koa-views')
 const json = require('koa-json')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
-const logger = require('koa-logger')
+// const logger = require('koa-logger')
 const session = require('koa-generic-session');
 const redisStore = require('koa-redis');
+const morgan = require('koa-morgan');
+const path = require('path');
+const fs = require('fs');
 
 
 const { REDIS_CONFIG } = require('./src/conf/db');
@@ -19,12 +22,27 @@ const user = require('./src/routes/user')
 // error handler
 onerror(app)
 
+// logs
+const ENV = process.env.NODE_ENV
+if(ENV === "dev"){
+  app.use(morgan('dev'));
+}else {
+  const logFileName = path.join(__dirname, 'logs', 'access.log');
+  const writeStream = fs.createWriteStream(logFileName, {
+    flags: 'a'
+  });
+  app.use(morgan('combined',{
+    stream: writeStream
+  }))
+}
+
+
 // middlewares
 app.use(bodyparser({
   enableTypes:['json', 'form', 'text']
 }))
 app.use(json())
-app.use(logger())
+// app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
 
 app.use(views(__dirname + '/views', {
